@@ -6,6 +6,7 @@ import InvestmentDetailsPage from './pages/InvestmentDetailsPage';
 import PortfolioPage from './pages/PortfolioPage';
 import Layout from './components/layout/Layout';
 
+
 function App() {
   return (
     <BrowserRouter>
