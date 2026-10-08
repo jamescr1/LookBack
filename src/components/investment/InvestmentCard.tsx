@@ -25,6 +25,10 @@ function InvestmentCard({ investment }: InvestmentCardProps) {
         <Typography>
           Exchange: {investment.exchange}
         </Typography>
+
+        <Typography>
+          Region: {investment.region}
+        </Typography>
       </CardContent>
     </Card>
   );
