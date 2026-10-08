@@ -1,4 +1,6 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Link } from "react-router-dom";
+
+import { Card, CardContent, Typography, CardActions, Button } from '@mui/material';
 
 import type { Investment } from '../../types/investment';
 
@@ -8,7 +10,7 @@ interface InvestmentCardProps {
 
 function InvestmentCard({ investment }: InvestmentCardProps) {
   return (
-    <Card>
+    <Card >
       <CardContent>
         <Typography variant="h6">
           {investment.ticker}
@@ -30,6 +32,11 @@ function InvestmentCard({ investment }: InvestmentCardProps) {
           Region: {investment.region}
         </Typography>
       </CardContent>
+      <CardActions sx={{ justifyContent: 'flex-end' }}>
+         <Button component={Link} to={`/investments/${investment.ticker}`} size="small" variant="contained">
+            View Investment
+         </Button>
+      </CardActions>
     </Card>
   );
 }
