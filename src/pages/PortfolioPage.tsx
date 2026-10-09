@@ -7,7 +7,7 @@ interface portfolioPageProps {
 function PortfolioPage({ portfolio }: portfolioPageProps ) {
   return(
     <>
-    <h1>Current portfolio composition</h1>
+    <h1>Current portfolio:</h1>
     {
       portfolio.map((currPortfolioInv) => (
         <div key={currPortfolioInv.investment.ticker}>
