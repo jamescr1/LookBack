@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
@@ -7,10 +7,21 @@ import InvestmentDetailsPage from './pages/InvestmentDetailsPage';
 import PortfolioPage from './pages/PortfolioPage';
 import Layout from './components/layout/Layout';
 import type { PortfolioInvestment } from './types/portfolioInvestment';
+import apiClient from './api/apiClient'
 
 
 function App() {
+     const [investments, setInvestments] = useState([]);
      const [portfolio, setPortfolio] = useState<PortfolioInvestment[]>([]);
+
+     useEffect(() => {
+      fetchInvestments()
+     }, []);
+
+     const fetchInvestments = async () => {
+        const response = await apiClient.get("/investments");
+        setInvestments(response.data)
+     }
 
     function addToPortfolio(portfolioInvestment: PortfolioInvestment): void {
       const investmentAlreadyInPort = portfolio.some((currInv) => currInv.investment.ticker === portfolioInvestment.investment.ticker);

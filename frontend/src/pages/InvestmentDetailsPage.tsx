@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 
 import { mockData } from '../data/mockData';
 import type { PortfolioInvestment } from '../types/portfolioInvestment';
-import apiClient from '../api/apiClient'
 
 type AddToPortfolioFunc = (portfolioInvestment: PortfolioInvestment) => void;
 interface InvestmentDetailsPageProps {
