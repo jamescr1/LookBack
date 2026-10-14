@@ -19,8 +19,12 @@ function App() {
      }, []);
 
      const fetchInvestments = async () => {
+      try {
         const response = await apiClient.get("/investments");
         setInvestments(response.data)
+      } catch(error) {
+        console.log(error)
+      }
      }
 
     function addToPortfolio(portfolioInvestment: PortfolioInvestment): void {
