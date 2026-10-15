@@ -4,8 +4,8 @@ LookBack is a 'currently in development' fullstack web application that enables 
 
 ## Tech Stack
 
-Frontend: React + TypeScript + MaterialUI<br>
-Backend: Java Spring Boot<br>
-Database & Migrations: PostgreSQL<br>
-Tooling: Docker + Git<br>
-External APIs: Alpha Vantage (real-time financial data provider)<br>
+**Frontend**: React + TypeScript + MaterialUI<br>
+**Backend**: Java Spring Boot<br>
+**Database & Migrations**: PostgreSQL<br>
+**Tooling**: Docker + Git<br>
+**External APIs**: Alpha Vantage (real-time financial data provider)<br>
