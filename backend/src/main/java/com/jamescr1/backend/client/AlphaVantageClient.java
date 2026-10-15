@@ -1,5 +1,6 @@
 package com.jamescr1.backend.client;
 
+import com.jamescr1.backend.client.dto.AlphaVantageMonthlyResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,12 +18,12 @@ public class AlphaVantageClient {
         this.apiKey = apiKey;
     }
 
-    public String getMonthlyData(String ticker) {
+    public AlphaVantageMonthlyResponse getMonthlyData(String symbol) {
         return restClient.get()
-                .uri("query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol={ticker}&apikey={apiKey}", ticker, apiKey)
+                .uri("query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol={symbol}&apikey={apiKey}", symbol, apiKey)
                 .accept(APPLICATION_JSON)
                 .retrieve()
-                .body(String.class);
+                .body(AlphaVantageMonthlyResponse.class);
     }
 
 }
