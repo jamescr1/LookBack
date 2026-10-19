@@ -35,19 +35,6 @@ public class HistoricalPriceImportService {
         historicalPriceRepository.saveAll(monthlyDataToInsert.values());
     }
 
-
-
-    //this method converts the LocalDate 'priceDate' field of all the provided HistoricalPrice objects to
-    //a YearMonth format and returns the resulting list of YearMonths
-//    private List<YearMonth> getYearMonthsForInvestment(List<HistoricalPrice> historicalPrices) {
-//        List<YearMonth> listOfMonthsInDB = new ArrayList<>();
-//        for(HistoricalPrice priceObj : historicalPrices) {
-//            YearMonth convertedDateFormat = YearMonth.from(priceObj.getPriceDate());
-//            listOfMonthsInDB.add(convertedDateFormat);
-//        }
-//        return listOfMonthsInDB;
-//    }
-
     private Map<YearMonth, HistoricalPrice> convertToYrMonthMap(List<HistoricalPrice> listToConvert) {
         Map<YearMonth, HistoricalPrice> mapToReturn = new HashMap<>();
 
@@ -77,25 +64,6 @@ public class HistoricalPriceImportService {
         }
         return dbMonthlyHistory;
     }
-
-//    private void updateMonthlyRecord(HistoricalPrice recordToUpdate, String dateString, MonthlyAdjustedDataPoint apiPriceData) {
-//        //converting to localdate type so it can be inserted into db record
-//        LocalDate dateToInsert = LocalDate.parse(dateString);
-//        //updating DB record's date
-//        recordToUpdate.setPriceDate(dateToInsert);
-//
-//        updatePriceData(recordToUpdate, apiPriceData);
-//    }
-
-//    private void updatePriceData(HistoricalPrice dbPriceRecord, MonthlyAdjustedDataPoint apiPriceData) {
-//        dbPriceRecord.setOpenPrice(apiPriceData.open());
-//        dbPriceRecord.setHighPrice(apiPriceData.high());
-//        dbPriceRecord.setLowPrice(apiPriceData.low());
-//        dbPriceRecord.setClosePrice(apiPriceData.close());
-//        dbPriceRecord.setAdjustedClose(apiPriceData.adjustedClose());
-//        dbPriceRecord.setVolume(apiPriceData.volume());
-//        dbPriceRecord.setDividendAmount(apiPriceData.dividendAmount());
-//    }
 
     private YearMonth strToYearMonth(String strToConvert) {
         LocalDate localDate = LocalDate.parse(strToConvert);
