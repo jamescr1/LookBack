@@ -2,6 +2,7 @@ package com.jamescr1.backend.service;
 
 import com.jamescr1.backend.client.AlphaVantageClient;
 import com.jamescr1.backend.client.dto.AlphaVantageMonthlyResponse;
+import com.jamescr1.backend.client.dto.MonthlyAdjustedDataPoint;
 import com.jamescr1.backend.entity.HistoricalPrice;
 import com.jamescr1.backend.entity.Investment;
 import com.jamescr1.backend.exception.ResourceNotFoundException;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,52 +24,12 @@ public class HistoricalPriceImportService {
     private final AlphaVantageClient alphaVantageClient;
 
     public void importHistoricalPriceData(Long investmentId) {
-        Investment investmentRecord = investmentRepository.findById(investmentId)
+        Investment investment = investmentRepository.findById(investmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        List<HistoricalPrice> dbMonthlyHistory = historicalPriceRepository.findAllByInvestment(investment);
 
-        String alphaVantageSymbol = investmentRecord.getAlphaVantageSymbol();
-        AlphaVantageMonthlyResponse monthlyResponse = alphaVantageClient.getMonthlyData(alphaVantageSymbol);
-        boolean priceHistoryNeedsUpdate = checkIfNeedsUpdatedPrice(investmentRecord, monthlyResponse);
-        if(priceHistoryNeedsUpdate) {
-            updateDb();
-        } else {
-            return;
-        }
-    }
-
-    private void updateDb() {
-        
-    }
-
-    private boolean checkIfNeedsUpdatedPrice(Investment investment, AlphaVantageMonthlyResponse monthlyResponse) {
-        List<HistoricalPrice> historicalPricesInDB = historicalPriceRepository.findAllByInvestment(investment);
-        //if no historic prices in DB for this investment then return true
-        if(historicalPricesInDB.isEmpty()) {
-            return true;
-        }
-
-        //checking if the latest month present in the DB is chronologically before the latest month in the API's data
-        YearMonth latestDBDate = getLatestDBDate(investment, historicalPricesInDB);
-        YearMonth latestApiDate = getLatestApiDate(monthlyResponse);
-        boolean dbNeedsUpdating;
-        //if most recent date in DB is older than most recent date in API response DB needs updating
-        dbNeedsUpdating = latestDBDate.isBefore(latestApiDate);
-
-        return dbNeedsUpdating;
-    }
-
-    private YearMonth getLatestDBDate(Investment investment, List<HistoricalPrice> historicalPricesInDB) {
-        List<YearMonth> yearMonthsAlreadyInDB = getYearMonthsForInvestment(historicalPricesInDB);
-        Optional<YearMonth> mostRecentMonth = yearMonthsAlreadyInDB.stream().max(YearMonth::compareTo);
-        return mostRecentMonth.orElseThrow(() -> new ResourceNotFoundException("No latest month found"));
-    }
-
-    private YearMonth getLatestApiDate(AlphaVantageMonthlyResponse monthlyResponse) {
-        String latestDateAsString = monthlyResponse.metadata().lastRefreshed();
-        //converting string to local date, so it can then be converted to type YearMonth
-        LocalDate latestLocalDate = LocalDate.parse(latestDateAsString);
-        YearMonth latestYrMonthDate = YearMonth.from(latestLocalDate);
-        return latestYrMonthDate;
+        String alphaVantageSymbol = investment.getAlphaVantageSymbol();
+        Map<String, MonthlyAdjustedDataPoint> apiMonthlyHistory = alphaVantageClient.getMonthlyData(alphaVantageSymbol).monthlyData();
     }
 
     //this method converts the LocalDate 'priceDate' field of all the provided HistoricalPrice objects to
@@ -82,6 +41,25 @@ public class HistoricalPriceImportService {
             listOfMonthsInDB.add(convertedDateFormat);
         }
         return listOfMonthsInDB;
+    }
+
+    private Map<YearMonth, HistoricalPrice> convertToYrMonthMap(List<HistoricalPrice> listToConvert) {
+        Map<YearMonth, HistoricalPrice> mapToReturn = new HashMap<>();
+
+        for(HistoricalPrice currEl : listToConvert) {
+            LocalDate localDate = currEl.getPriceDate();
+            YearMonth yrMonth = YearMonth.from(localDate);
+            mapToReturn.put(yrMonth, currEl);
+        }
+        return mapToReturn;
+    }
+
+    private void processAPIData (Map<String, MonthlyAdjustedDataPoint> apiMonthlyData) {
+        for(Map.Entry<String, MonthlyAdjustedDataPoint> entry : apiMonthlyData.entrySet()) {
+            String key = entry.getKey();
+            MonthlyAdjustedDataPoint value = entry.getValue();
+
+        }
     }
 
 
