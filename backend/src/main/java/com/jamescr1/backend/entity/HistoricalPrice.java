@@ -1,7 +1,9 @@
 package com.jamescr1.backend.entity;
 
+import com.jamescr1.backend.client.dto.MonthlyAdjustedDataPoint;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -9,6 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "historical_price",
         uniqueConstraints = {
@@ -51,4 +54,30 @@ public class HistoricalPrice {
 
     @Column(nullable = false, precision = 18, scale = 6)
     private BigDecimal dividendAmount;
+
+    public void updateFrom(String dateString, MonthlyAdjustedDataPoint apiPriceData) {
+        //converting to localdate type so it can be inserted into db record
+        LocalDate dateToInsert = LocalDate.parse(dateString);
+        //updating date
+        this.setPriceDate(dateToInsert);
+        //updating price data
+        updatePriceData(apiPriceData);
+    }
+
+    private void updatePriceData(MonthlyAdjustedDataPoint apiPriceData) {
+        this.setOpenPrice(apiPriceData.open());
+        this.setHighPrice(apiPriceData.high());
+        this.setLowPrice(apiPriceData.low());
+        this.setClosePrice(apiPriceData.close());
+        this.setAdjustedClose(apiPriceData.adjustedClose());
+        this.setVolume(apiPriceData.volume());
+        this.setDividendAmount(apiPriceData.dividendAmount());
+    }
+
+    public static HistoricalPrice fromApiData(Investment investment, String dateString, MonthlyAdjustedDataPoint apiPriceData) {
+        HistoricalPrice price = new HistoricalPrice();
+        price.setInvestment(investment);
+        price.updateFrom(dateString, apiPriceData);
+        return price;
+    }
 }
